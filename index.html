@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Rasmalai ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --accent-pink: #ff2e63;
+            --rasmalai-gold: #ffcc33;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100vh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            overflow: hidden; color: white;
+        }
+
+        /* Animated Background Hearts */
+        .heart-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            padding: 40px; text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            z-index: 10; width: 85%; max-width: 400px;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hidden { display: none !important; opacity: 0; transform: scale(0.9); }
+
+        #btn-open {
+            background: var(--accent-pink);
+            color: white; border: none;
+            padding: 18px 45px; border-radius: 50px;
+            font-size: 1.1rem; font-weight: 600;
+            cursor: pointer; transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(255, 46, 99, 0.3);
+        }
+
+        #btn-open:hover { transform: scale(1.05); box-shadow: 0 15px 30px rgba(255, 46, 99, 0.5); }
+
+        /* Timer UI */
+        .timer-display { display: flex; justify-content: center; gap: 12px; margin-top: 25px; }
+        .t-box { 
+            background: rgba(255, 255, 255, 0.1); 
+            padding: 12px; border-radius: 15px; min-width: 70px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .t-box span { display: block; font-size: 1.8rem; font-weight: 600; color: var(--accent-pink); }
+        .t-box p { font-size: 0.65rem; margin: 0; letter-spacing: 1px; color: #bbb; text-transform: uppercase; }
+
+        /* Birthday Content */
+        .bday-title { font-family: 'Dancing Script', cursive; font-size: 3.2rem; color: var(--accent-pink); margin: 0; }
+        .rasmalai-text { color: var(--rasmalai-gold); font-weight: 600; font-size: 1.3rem; }
+        .love-footer { font-size: 1.4rem; margin-top: 20px; display: block; animation: heartbeat 1.5s infinite; }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .floating-heart {
+            position: absolute; animation: float 5s linear infinite;
+            color: rgba(255, 46, 99, 0.4); user-select: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="heart-bg" id="heart-container"></div>
+
+    <div id="screen-start" class="glass-card">
+        <h2 style="font-weight: 300; letter-spacing: 2px;">SURPRISE AWAITS</h2>
+        <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 30px;">For Nancy's Eyes Only 🔒</p>
+        <button id="btn-open">Unlock Your Gift 💖</button>
+    </div>
+
+    <div id="screen-timer" class="glass-card hidden">
+        <p style="letter-spacing: 3px; font-size: 0.9rem; color: #aaa;">THE FINAL COUNTDOWN</p>
+        <div class="timer-display">
+            <div class="t-box"><span id="days">00</span><p>Days</p></div>
+            <div class="t-box"><span id="hours">00</span><p>Hrs</p></div>
+            <div class="t-box"><span id="mins">00</span><p>Min</p></div>
+            <div class="t-box"><span id="secs">00</span><p>Sec</p></div>
+        </div>
+        <p style="margin-top: 20px; font-style: italic; font-size: 0.8rem; color: var(--accent-pink);">Wait for the magic at midnight...</p>
+    </div>
+
+    <div id="screen-bday" class="glass-card hidden" style="background: rgba(255, 255, 255, 0.15);">
+        <h1 class="bday-title">Happy Birthday!</h1>
+        <div style="margin-top: 15px; font-weight: 300; line-height: 1.6;">
+            To my sweetest <span class="rasmalai-text">Rasmalai 🍮</span>,
+            <p>I wish you a day as brilliant as your dreams. May you conquer <strong>AIIMS Rishikesh</strong> and become the finest doctor!</p>
+            <p>I'm so proud of everything you are.</p>
+            <span class="love-footer">I Love You! ❤️</span>
+        </div>
+    </div>
+
+    <audio id="bday-music" loop>
+        <source src="bday.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // 1. CONFIGURATION
+        const isTestMode = false; // SET TO TRUE TO TEST THE 5s POP NOW
+        const bdayDate = new Date("January 22, 2026 00:00:00").getTime();
+
+        const btnOpen = document.getElementById('btn-open');
+        const sStart = document.getElementById('screen-start');
+        const sTimer = document.getElementById('screen-timer');
+        const sBday = document.getElementById('screen-bday');
+        const music = document.getElementById('bday-music');
+
+        // 2. BACKGROUND ANIMATION
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            heart.style.fontSize = (Math.random() * 15 + 10) + 'px';
+            document.getElementById('heart-container').appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
+        }
+        setInterval(createHeart, 400);
+
+        // 3. INTERACTION LOGIC
+        btnOpen.addEventListener('click', () => {
+            sStart.classList.add('hidden');
+            setTimeout(() => {
+                sStart.style.display = 'none';
+                const now = new Date().getTime();
+
+                if (isTestMode) {
+                    sTimer.classList.remove('hidden');
+                    runTest();
+                } else if (now >= bdayDate) {
+                    showFinalSurprise();
+                } else {
+                    sTimer.classList.remove('hidden');
+                    runActualCountdown();
+                }
+            }, 500);
+            
+            // Try to play music (browsers allow it after this click)
+            music.play().catch(() => console.log("Music ready for midnight."));
+        });
+
+        function runTest() {
+            let timeLeft = 5;
+            const t = setInterval(() => {
+                timeLeft--;
+                document.getElementById('secs').innerText = timeLeft.toString().padStart(2, '0');
+                if (timeLeft <= 0) { clearInterval(t); showFinalSurprise(); }
+            }, 1000);
+        }
+
+        function runActualCountdown() {
+            const x = setInterval(() => {
+                const now = new Date().getTime();
+                const diff = bdayDate - now;
+
+                if (diff <= 0) {
+                    clearInterval(x);
+                    showFinalSurprise();
+                    return;
+                }
+
+                document.getElementById("days").innerText = Math.floor(diff / 86400000).toString().padStart(2, '0');
+                document.getElementById("hours").innerText = Math.floor((diff % 86400000) / 3600000).toString().padStart(2, '0');
+                document.getElementById("mins").innerText = Math.floor((diff % 3600000) / 60000).toString().padStart(2, '0');
+                document.getElementById("secs").innerText = Math.floor((diff % 60000) / 1000).toString().padStart(2, '0');
+            }, 1000);
+        }
+
+        function showFinalSurprise() {
+            sTimer.classList.add('hidden');
+            setTimeout(() => {
+                sTimer.style.display = 'none';
+                sBday.classList.remove('hidden');
+                
+                // Infinite Confetti
+                var duration = 15 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+                function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) return clearInterval(interval);
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                }, 250);
+            }, 500);
+        }
+    </script>
+</body>
+</html>
